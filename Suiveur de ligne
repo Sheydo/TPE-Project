@@ -1,0 +1,60 @@
+#include <QTRSensors.h>
+#define NUM_SENSORS         	2
+#define NUM_SAMPLES_PER_SENSOR  4
+#define EMITTER_PIN         	7
+
+
+QTRSensorsAnalog qtra((unsigned char[]) {A0, A1},
+  NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
+unsigned int sensorValues[NUM_SENSORS];
+
+
+void setup()
+{
+  delay(500);
+  pinMode(7, OUTPUT);
+  digitalWrite(7, HIGH);    
+  for (int i = 0; i < 400; i++)  
+  {
+	qtra.calibrate();
+  }
+  digitalWrite(7, LOW);
+
+ 
+  Serial.begin(9600);
+  for (int i = 0; i < NUM_SENSORS; i++)
+  {
+	Serial.print(qtra.calibratedMinimumOn[i]);
+	Serial.print(' ');
+  }
+  Serial.println();
+
+ 
+  for (int i = 0; i < NUM_SENSORS; i++)
+  {
+	Serial.print(qtra.calibratedMaximumOn[i]);
+	Serial.print(' ');
+  }
+  Serial.println();
+  Serial.println();
+  delay(1000);
+}
+
+
+void loop()
+{
+ 
+  unsigned int position = qtra.readLine(sensorValues);
+  int g,d;
+
+	g=sensorValues[0];
+	Serial.print(g);
+	Serial.print('\t');
+	d=sensorValues[1];
+	Serial.print(d);
+	Serial.print('\t');
+ 
+  Serial.println();
+
+  delay(250);
+}
